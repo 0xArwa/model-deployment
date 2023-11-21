@@ -1,14 +1,126 @@
 # Streamlit Documentation: https://docs.streamlit.io/
 
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 from PIL import Image
+from streamlit_card import card # https://github.com/gamcoh/st-card
+import base64
+from st_aggrid import AgGrid # https://github.com/PablocFonseca/streamlit-aggrid
+from st_vizzu import * # https://github.com/avrabyt/Streamlit-ipyvizzu
+
+
 
 # Title/Text
-st.title("This is a title")
-st.text("This is some test.")
+st.title("Soldier Race Prediction")
+st.text("Here you can predict a soldier race based on set of inputs.")
+
+
+with open('army_pic.jpg', "rb") as f:
+    data = f.read()
+    encoded = base64.b64encode(data)
+data = "data:image/png;base64," + encoded.decode("utf-8")
+
+
+hasClicked = card(
+  title="Original notebook",
+  text="Here",
+  image= data,
+  url="https://github.com/0xArwa/soldier-race-prediction",
+  on_click=lambda: print("clicked!")
+)
+
+
+st.subheader('Dataset Overview')
+
+st.info(':bulb: NOTE: this is the cleaned df after data preproccesing to get a \
+        better idea about the data the model was actually trained on.')
+df = pd.read_csv("cleaned_dataset.csv", index_col=0)
+
+st.dataframe(df.describe().T)  
+
+st.text("statistical overview about the numerical columns.")
+# --- First Vis ------ 
+
+# Create ipyvizzu Object with the DataFrame
+obj = create_vizzu_obj(df)
+
+# Preset plot usage. Preset plots works directly with DataFrames.
+bar_obj = bar_chart(df,
+            x = "Age", 
+            y = "DODRace",
+            title= "Age vs. Soldiors Race"
+            )
+
+# Animate with defined arguments 
+anim_obj = beta_vizzu_animate( bar_obj,
+    x = "Gender",
+    y =  ["DODRace", "Age"],
+    title = "Age vs. Soldiors Race (Based on Gender)",
+    label= "DODRace",
+    color="Gender",
+    legend="color",
+    sort="byValue",
+    reverse=True,
+    align="center",
+    split=False,
+)
+
+# Animate with general dict based arguments 
+_dict = {"size": {"set": "DODRace"}, 
+    "geometry": "circle",
+    "coordSystem": "polar",
+    "title": "General overview",
+    }
+anim_obj2 = vizzu_animate(anim_obj,_dict)
+
+
+# Visualize within Streamlit
+with st.container(): # Maintaining the aspect ratio
+    st.button("Animate", key=1)
+    vizzu_plot(anim_obj2)
+
+# plot disc
+st.text("The dataset is highly imblanced with the white race as the most frequent race in\n" 
+        "the dataset and Hispanic race is the least frequent race.")
+
+# ---- 2nd vis -----
+obj2 = create_vizzu_obj(df)
+
+bar_obj2 = bar_chart(df,
+            x = "stature", 
+            y = "SubjectsBirthLocation",
+            title= "stature based on birth location",
+            #height= "700px"
+            )
+
+anim_obj_ = beta_vizzu_animate( bar_obj2,
+    x = "DODRace",
+    y =  ["SubjectsBirthLocation", "stature"],
+    title = "stature vs. birth location (Based on Race)",
+    label= "SubjectsBirthLocation",
+    color="DODRace",
+    legend="color",
+    sort="byValue",
+    reverse=True,
+    align="center",
+    split=False,
+)
+
+_dict2 = {"size": {"set": "SubjectsBirthLocation"}, 
+    "geometry": "circle",
+    "coordSystem": "polar",
+    "title": "General overview",
+    }
+anim_obj3 = vizzu_animate(anim_obj_,_dict2)
+
+with st.container(): # Maintaining the aspect ratio
+    st.button("Animate", key=2)
+    vizzu_plot(anim_obj3)
+
+# plot disc
+st.text("The white race was mostly born inside the united states.")
+
 
 # Markdown
 st.markdown("Streamlit is **_really_ cool** :+1:")
@@ -35,125 +147,10 @@ st.write("Hello World! :sunglasses:")
 st.write(range(10))
 
 # Add image
-img = Image.open("images.jpeg")
-st.image(img, caption="cattie", width=300)
+#img = Image.open("images.jpeg")
+#st.image(img, caption="cattie", width=300)
 
 # Add video
 
 #my_video = open("ml.mov",'rb')
 #st.video(my_video)
-
-# Add youtube video
-st.video("https://www.youtube.com/watch?v=uHKfrz65KSU")
-
-# Add checkbox
-st.checkbox("Up and Down")
-cbox= st.checkbox("Hide and Seek")
-
-if cbox :
-    st.write("Hide")
-else :
-    st.write("Seek")
-
-
-# Add radio button
-status = st.radio("Select a color",("blue","orange","yellow"))
-st.write("My favorite color is ", status)
-
-# Add button
-st.button("Click me")
-
-if st.button("Press me") :
-    st.success("Analyze Results are..")
-
-# Add select box
-occupation=st.selectbox("Your Occupation", ["Programmer", "DataScientist", "Doctor"])
-st.write("Your Occupation is ", occupation)
-
-# Multi_select
-multi_select = st.multiselect("Select multiple numbers",[1,2,3,4,5])
-st.write(f"You selected {len(multi_select)} number(s)")
-st.write("Your selection is/are", multi_select)
-for i in range(len(multi_select)):
-    st.write(f"Your {i+1}. selection is {multi_select[i]}")
-
-# Slider
-option1 = st.slider("Select a number", min_value=5, max_value=70, value=30, step=5)
-option2 = st.slider("Select a number", min_value=0.2, max_value=30.2, value=5.2, step=0.2)
-
-result=option1*option2
-st.write("multiplication of two options is:",result)
-
-# Text_input
-name = st.text_input("Enter your name", placeholder="Your name here")
-if st.button("Submit"):
-    st.write("Hello {}".format(name.title()))
-    
-# Code  # to show as if code
-st.code("import pandas as pd")
-st.code("import pandas as pd\nimport numpy as np")
-
-# Echo  # it is used "with block" to draw some code on the app, then execute it
-with st.echo():
-    import pandas as pd
-    import numpy as np
-    df = pd.DataFrame({"a":[1,2,3], "b":[4,5,6]})
-    df
-
-
-# Date input
-import datetime
-today=st.date_input("Today is", datetime.datetime.now())
-date=st.date_input("Enter the date")
-
-# Time input
-the_time=st.time_input("The time is", datetime.time(8, 45))
-hour=st.time_input(str(pd.Timestamp.now()))
-st.write("Hour is", hour)
-
-# Sidebar
-st.sidebar.title("Sidebar title")
-st.sidebar.header("Sidebar header")
-
-# Sidebar with slider
-a=st.sidebar.slider("input",0,5,2,1)
-x=st.sidebar.slider("input2")
-st.write("# sidebar input result")
-st.success(a*x)
-
-# Dataframe
-df=pd.read_csv("Advertising.csv")
-
-# To display dataframe there are 3 methods
-
-# Method 1
-st.table(df.head())
-# Method 2
-st.write(df.head())  # dynamic, you can sort
-st.write(df.isnull().sum())
-# Method 3
-st.dataframe(df.describe().T)  # dynamic, you can sort
-
-# To load machine learning model
-import pickle
-filename = "my_model"
-model=pickle.load(open(filename, "rb"))
-
-# To take feature inputs
-TV = st.sidebar.number_input("TV:",min_value=5, max_value=300)
-radio = st.sidebar.number_input("radio:",min_value=1, max_value=50)
-newspaper = st.sidebar.number_input("newspaper:",min_value=0, max_value=120)
-
-# Create a dataframe using feature inputs
-my_dict = {"TV":TV,
-           "radio":radio,
-           "newspaper":newspaper}
-
-df = pd.DataFrame.from_dict([my_dict])
-st.table(df)
-
-# Prediction with user inputs
-predict = st.button("Predict")
-result = model.predict(df)
-if predict :
-    st.success(result[0])
