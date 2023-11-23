@@ -34,7 +34,7 @@ st.subheader('Dataset Overview')
 
 st.info(':bulb: NOTE: this is the cleaned df after data preproccesing to get a \
         better idea about the data the model was actually trained on.')
-df = pd.read_csv("cleaned_dataset.csv", index_col=0)
+df = pd.read_csv("cleaned_dataset.csv")
 
 st.dataframe(df.describe().T)  
 
@@ -137,33 +137,95 @@ st.table(data)
 
 st.subheader('Car Specifications')
 
-'''
-Used              16050
-Pre-registered      969
-Demonstration       779
-Employee's car      376
-Name: type, dtype: int64
-'''
-st.text(df.gearbox.value_counts())
+st.text('Please select the options of the car in order to predic its price')
 
 #  ------------------- inputs --------------------------------
 
+# selected_features = ['make_model', 'location', 'body_type','gearbox',
+               #      'engine_size', 'co_emissions','drivetrain','empty_weight','energy_efficiency_class',
+                #     'comfort_&_convenience_Package','age', 'power_kW', 'safety_&_security_Package']
+
+
+
+# make_model
+st.markdown("#### Select the car model")
+make_model = st.selectbox('', options = df.make_model.unique().tolist())
+
+
 # location
 st.markdown("#### Select the location")
-location = st.selectbox('', options=['DE','ES', 'NL', 'IT', 'BE' , 'FR', 'AT', 'LU', 'BG'])
+location = st.selectbox('', options=df.location.unique().tolist())
 
 # body type
 st.markdown("#### Select the car body type")
-body_type = st.radio('', options=['Sedan','Compact', 'Station wagon', 'Off-Road/Pick-up', 'Convertible' , 'Coupe'])
+body_type = st.radio('', options=df.body_type.unique().tolist())
 
-# car type
-st.markdown("#### Select the car type")
-type = st.radio('', options=['Used','Pre-registered', 'Demonstration', "Employee's car"])
 
-# warranty (yes or no)
-st.markdown("#### Does the car has warranty?")
-warranty = st.radio('', options=['Yes','No'])
+# gearbox
+st.markdown("#### Select the gearbox")
+gearbox = st.radio('', options=df.gearbox.unique().tolist())
 
-# mileage
-st.markdown("#### The car mile age - slide to select")
-mileage = st.slider("",min_value = float(df.mileage.min()), max_value = float(df.mileage.max()))
+# engine_size
+st.markdown("#### Engine size")
+engine_size = st.slider("",min_value = float(df.engine_size.min()), max_value = float(df.engine_size.max()))
+
+# co_emissions
+st.markdown("#### Co emissions")
+co_emissions = st.slider("",min_value = float(df.co_emissions.min()), max_value = float(df.co_emissions.max()))
+
+# drivetrain
+st.markdown("#### Drivetrain")
+drivetrain = st.radio('', options=df.drivetrain.unique().tolist())
+
+# empty_weight
+st.markdown("#### Car empty weight")
+empty_weight = st.slider("",min_value = float(df.empty_weight.min()), max_value = float(df.empty_weight.max()))
+
+# age
+st.markdown("#### Car age")
+age = st.number_input("", min_value = int(df.age.min()), max_value = int(df.age.max()), step=1)
+
+# power_kW
+st.markdown("#### Car power in KW")
+power_kW = st.slider("",min_value = float(df.power_kW.min()), max_value = float(df.power_kW.max()))
+
+# energy_efficiency_class
+st.markdown("#### Select energy efficiency class")
+energy_efficiency_class = st.selectbox('', options=df.energy_efficiency_class.unique().tolist())
+
+# energy_efficiency_class
+st.markdown("#### Select comfort & convenience package")
+comfort_convenience_package = st.selectbox('', options=df['comfort_&_convenience_Package'].unique().tolist())
+
+# energy_efficiency_class
+st.markdown("#### Select safety security package")
+safety_security_package = st.selectbox('', options=df['safety_&_security_Package'].unique().tolist())
+
+import pickle
+filename = "GB_regressor_model.sav"
+model=pickle.load(open(filename, "rb"))
+
+my_dict = {'make_model':make_model,
+           'location':location,
+           'body_type':body_type,
+           'gearbox':gearbox,
+           'engine_size':engine_size,
+           'co_emissions':co_emissions,
+           'drivetrain':drivetrain,
+           'empty_weight':empty_weight,
+           'energy_efficiency_class':energy_efficiency_class,
+            'comfort_&_convenience_Package':comfort_convenience_package,
+            'age':age, 
+            'power_kW':power_kW, 
+            'safety_&_security_Package':safety_security_package
+           }
+
+df = pd.DataFrame.from_dict([my_dict])
+st.table(df)
+
+# Prediction with user inputs
+predict = st.button("Predict")
+result = model.predict(df)
+if predict :
+    st.text('Predicted car price is: ')
+    st.success(result[0].__round__(3))
