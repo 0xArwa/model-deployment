@@ -128,9 +128,13 @@ st.caption(" - Luxury sedans are the most common body type for cars with high po
 
 
 
-# delete this before production 
-st.error("Delete this before production!!")
-data = pd.DataFrame({"Column": df.columns, "Type": df.dtypes}).reset_index(drop=True)
+# delete/comment this before production 
+#st.error("Delete this before production!!")
+st.subheader('Most important features - Gradient Boosting model')
+store_val = df[['make_model', 'location', 'body_type','gearbox',
+                    'engine_size', 'co_emissions','drivetrain','empty_weight','energy_efficiency_class',
+                  'comfort_&_convenience_Package','age', 'power_kW', 'safety_&_security_Package']]
+data = pd.DataFrame({"Column": store_val.columns, "Type": store_val.dtypes}).reset_index(drop=True)
 
 st.table(data)
 
@@ -227,5 +231,5 @@ st.table(df)
 predict = st.button("Predict")
 result = model.predict(df)
 if predict :
-    st.text('Predicted car price is: ')
+    st.text('💲Predicted car price is: ')
     st.success(result[0].__round__(3))
