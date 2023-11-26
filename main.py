@@ -150,60 +150,60 @@ st.text('Please select the options of the car in order to predic its price')
                 #     'comfort_&_convenience_Package','age', 'power_kW', 'safety_&_security_Package']
 
 
-
+form = st.form("my_form")
 # make_model
-st.markdown("#### Select the car model")
-make_model = st.selectbox('', options = df.make_model.unique().tolist())
+form.markdown("#### Select the car model")
+make_model = form.selectbox('', options = df.make_model.unique().tolist())
 
 
 # location
-st.markdown("#### Select the location")
-location = st.selectbox('', options=df.location.unique().tolist())
+form.markdown("#### Select the location")
+location = form.selectbox('', options=df.location.unique().tolist())
 
 # body type
-st.markdown("#### Select the car body type")
-body_type = st.radio('', options=df.body_type.unique().tolist())
+form.markdown("#### Select the car body type")
+body_type = form.radio('', options=df.body_type.unique().tolist())
 
 
 # gearbox
-st.markdown("#### Select the gearbox")
-gearbox = st.radio('', options=df.gearbox.unique().tolist())
+form.markdown("#### Select the gearbox")
+gearbox = form.radio('', options=df.gearbox.unique().tolist())
 
 # engine_size
-st.markdown("#### Engine size")
-engine_size = st.slider("",min_value = float(df.engine_size.min()), max_value = float(df.engine_size.max()))
+form.markdown("#### Engine size")
+engine_size = form.slider("",min_value = float(df.engine_size.min()), max_value = float(df.engine_size.max()))
 
 # co_emissions
-st.markdown("#### Co emissions")
-co_emissions = st.slider("",min_value = float(df.co_emissions.min()), max_value = float(df.co_emissions.max()))
+form.markdown("#### Co emissions")
+co_emissions = form.slider("",min_value = float(df.co_emissions.min()), max_value = float(df.co_emissions.max()))
 
 # drivetrain
-st.markdown("#### Drivetrain")
-drivetrain = st.radio('', options=df.drivetrain.unique().tolist())
+form.markdown("#### Drivetrain")
+drivetrain = form.radio('', options=df.drivetrain.unique().tolist())
 
 # empty_weight
-st.markdown("#### Car empty weight")
-empty_weight = st.slider("",min_value = float(df.empty_weight.min()), max_value = float(df.empty_weight.max()))
+form.markdown("#### Car empty weight")
+empty_weight = form.slider("",min_value = float(df.empty_weight.min()), max_value = float(df.empty_weight.max()))
 
 # age
-st.markdown("#### Car age")
-age = st.number_input("", min_value = int(df.age.min()), max_value = int(df.age.max()), step=1)
+form.markdown("#### Car age")
+age = form.number_input("", min_value = int(df.age.min()), max_value = int(df.age.max()), step=1)
 
 # power_kW
-st.markdown("#### Car power in KW")
-power_kW = st.slider("",min_value = float(df.power_kW.min()), max_value = float(df.power_kW.max()))
+form.markdown("#### Car power in KW")
+power_kW = form.slider("",min_value = float(df.power_kW.min()), max_value = float(df.power_kW.max()))
 
 # energy_efficiency_class
-st.markdown("#### Select energy efficiency class")
-energy_efficiency_class = st.selectbox('', options=df.energy_efficiency_class.unique().tolist())
+form.markdown("#### Select energy efficiency class")
+energy_efficiency_class = form.selectbox('', options=df.energy_efficiency_class.unique().tolist())
 
 # energy_efficiency_class
-st.markdown("#### Select comfort & convenience package")
-comfort_convenience_package = st.selectbox('', options=df['comfort_&_convenience_Package'].unique().tolist())
+form.markdown("#### Select comfort & convenience package")
+comfort_convenience_package = form.selectbox('', options=df['comfort_&_convenience_Package'].unique().tolist())
 
 # energy_efficiency_class
-st.markdown("#### Select safety security package")
-safety_security_package = st.selectbox('', options=df['safety_&_security_Package'].unique().tolist())
+form.markdown("#### Select safety security package")
+safety_security_package = form.selectbox('', options=df['safety_&_security_Package'].unique().tolist())
 
 import pickle
 filename = "GB_regressor_model.sav"
@@ -228,7 +228,7 @@ df = pd.DataFrame.from_dict([my_dict])
 st.table(df)
 
 # Prediction with user inputs
-predict = st.button("Predict")
+predict = form.form_submit_button("Predict")
 result = model.predict(df)
 if predict :
     st.text('💲Predicted car price is: ')
